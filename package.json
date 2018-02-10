@@ -1,0 +1,27 @@
+{
+  "name": "footstep",
+  "version": "1.0.0",
+  "description": "a simple nodejs logger",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HamiStudios/footstep.git"
+  },
+  "keywords": [
+    "logger"
+  ],
+  "author": "HamiStudios",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/HamiStudios/footstep/issues"
+  },
+  "homepage": "https://github.com/HamiStudios/footstep#readme",
+  "dependencies": {
+    "colors": "^1.1.2",
+    "dot-prop": "^4.2.0",
+    "mkdirp": "^0.5.1"
+  }
+}
