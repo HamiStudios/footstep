@@ -134,8 +134,10 @@ function log(options, type, message) {
 		let addToLog = function (filePath) {
 			let fileMessage = message;
 			let stripMatches = fileMessage.match(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g);
-			for (let i = 0; i < stripMatches.length; i++) {
-			    fileMessage = fileMessage.replace(stripMatches[i], "");
+			if(stripMatches !== null) {
+				for (let i = 0; i < stripMatches.length; i++) {
+					fileMessage = fileMessage.replace(stripMatches[i], "");
+				}
 			}
 
 			fs.appendFile(filePath, fileMessage + os.EOL, function () {
