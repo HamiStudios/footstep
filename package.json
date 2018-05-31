@@ -1,10 +1,10 @@
 {
   "name": "footstep",
-  "version": "1.0.1",
-  "description": "a simple nodejs logger",
+  "version": "2.0.0",
+  "description": "a simple robust nodejs logger",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npx jest"
   },
   "repository": {
     "type": "git",
@@ -19,9 +19,8 @@
     "url": "https://github.com/HamiStudios/footstep/issues"
   },
   "homepage": "https://github.com/HamiStudios/footstep#readme",
-  "dependencies": {
-    "colors": "^1.1.2",
-    "dot-prop": "^4.2.0",
-    "mkdirp": "^0.5.1"
+  "devDependencies": {
+    "dev-null": "^0.1.1",
+    "jest": "^23.1.0"
   }
 }
