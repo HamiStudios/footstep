@@ -48,8 +48,7 @@ Footstep comes with a lot of useful options to help customize your log messages 
 | format          | [{{date}}] {{type}}: {{message}}                   | String   |
 | formats.date    | [Function() {}](/src/Logger.js#L59)                | Function |
 | formats.message | [Function() {}](/src/Logger.js#L71)                | Function |
-| formats.prefix  | [Function() {}](/src/Logger.js#L76)                | Function |
-| formats.type    | [Function() {}](/src/Logger.js#L81)                | Function |
+| formats.type    | [Function() {}](/src/Logger.js#L76)                | Function |
 | prefix          |                                                    | String   |
 | eol             | [os.EOL](https://nodejs.org/api/os.html#os_os_eol) | String   |
 | debug           | false                                              | Boolean  |
