@@ -1,8 +1,14 @@
+![footstep logo](https://www.hamistudios.com/assets/img/footstep_icon_transparent.png)
 
 # footstep  
 footstep is a simple robust logger for [nodejs](https://nodejs.org/en/)  
-  
-  
+
+
+![npm downloads](https://img.shields.io/npm/dt/footstep.svg?style=flat-square)
+![npm version](https://img.shields.io/npm/v/footstep.svg?style=flat-square)
+![license](https://img.shields.io/github/license/hamistudios/footstep.svg?style=flat-square)
+
+
 ### Installation  
 ```  
 $ npm install --save footstep  
