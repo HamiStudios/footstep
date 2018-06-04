@@ -11,7 +11,7 @@ footstep is a simple robust logger for [nodejs](https://nodejs.org/en/)
 
 ### Installation  
 ```  
-$ npm install --save footstep  
+$ npm install --save @hamistudios/footstep  
 ```  
   
 ### Setup  
