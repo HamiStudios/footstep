@@ -21,10 +21,10 @@
   },
   "homepage": "https://github.com/HamiStudios/footstep#readme",
   "devDependencies": {
-    "jest": "^23.1.0"
+    "jest": "^23.1.0",
+    "coveralls": "^3.0.1"
   },
   "dependencies": {
-    "circle-assign": "^1.0.4",
-    "coveralls": "^3.0.1"
+    "circle-assign": "^1.0.4"
   }
 }
