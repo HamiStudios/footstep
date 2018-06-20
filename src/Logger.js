@@ -2,8 +2,7 @@ const
   // modules
   util      = require('util'),
   os        = require('os'),
-  Stream    = require('stream'),
-  Writable  = Stream.Writable,
+  stream    = require('stream'),
   merge     = require('circle-assign'),
   colors    = require('./Colors'),
 
@@ -108,7 +107,8 @@ Logger.prototype.setOptions = function(options) {
 
 Logger.prototype._log = function(type, formatted) {
 
-  if(this.options.streams[type] instanceof Writable) { // check if the stream is a Writable stream
+  if(this.options.streams[type] !== undefined &&
+     typeof this.options.streams[type]._write === 'function') { // check if the stream is a Writable stream
 
     // write the formatted log output to the stream
     this.options.streams[type].write(

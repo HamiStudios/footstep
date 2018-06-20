@@ -14,13 +14,7 @@ describe('generic tests', () => {
   beforeEach(() => {
 
     let
-      devNull = function () {
-
-        if(!(this instanceof devNull)) return new devNull();
-
-        stream.Writable.call(this);
-
-      }
+      devNull = new stream.Writable
     ;
 
     devNull._write = function(chunk, encoding, callback) {
@@ -32,7 +26,7 @@ describe('generic tests', () => {
     logger    = new Logger({
       streams: {
         verbose   : () => {},
-        info      : devNull(),
+        info      : devNull,
         error     : () => {},
         warning   : 'invalid',
         notice    : () => {},
