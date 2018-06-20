@@ -13,40 +13,69 @@ const
   codes         = {
     // colors
     COLORS        : {
-      RESET         : [ 0, 0 ],
-      BLACK         : [ 30, 39 ],
-      BLUE          : [ 34, 39 ],
-      CYAN          : [ 36, 39 ],
-      GRAY          : [ 90, 39 ],
-      GREEN         : [ 32, 39 ],
-      GREY          : [ 90, 39 ],
-      MAGENTA       : [ 35, 39 ],
-      RED           : [ 31, 39 ],
-      WHITE         : [ 37, 39 ],
-      YELLOW        : [ 33, 39 ]
+      RESET         : [ 0 ],
+      BLACK         : [ 30 ],
+      RED           : [ 31 ],
+      GREEN         : [ 32 ],
+      YELLOW        : [ 33 ],
+      BLUE          : [ 34 ],
+      MAGENTA       : [ 35 ],
+      CYAN          : [ 36 ],
+      WHITE         : [ 37 ],
+      GRAY          : [ 90 ],
+      GREY          : [ 90 ]
+    },
+
+    // bright colors
+    BRIGHT        : {
+      BLACK         : [ 90 ],
+      RED           : [ 91 ],
+      GREEN         : [ 92 ],
+      YELLOW        : [ 93 ],
+      BLUE          : [ 94 ],
+      MAGENTA       : [ 95 ],
+      CYAN          : [ 96 ],
+      WHITE         : [ 97 ]
     },
 
     // background colors
     BACKGROUND    : {
-      BLACK         : [ 40, 49 ],
-      BLUE          : [ 44, 49 ],
-      CYAN          : [ 46, 49 ],
-      GREEN         : [ 42, 49 ],
-      MAGENTA       : [ 45, 49 ],
-      RED           : [ 41, 49 ],
-      WHITE         : [ 47, 49 ],
-      YELLOW        : [ 43, 49 ]
+      BLACK         : [ 40 ],
+      RED           : [ 41 ],
+      GREEN         : [ 42 ],
+      YELLOW        : [ 43 ],
+      BLUE          : [ 44 ],
+      MAGENTA       : [ 45 ],
+      CYAN          : [ 46 ],
+      WHITE         : [ 47 ]
+    },
+
+    // background colors
+    BRIGHT_BACKGROUND    : {
+      BLACK         : [ 100 ],
+      RED           : [ 101 ],
+      GREEN         : [ 102 ],
+      YELLOW        : [ 103 ],
+      BLUE          : [ 104 ],
+      MAGENTA       : [ 105 ],
+      CYAN          : [ 106 ],
+      WHITE         : [ 107 ]
     },
 
     // styles
     STYLES        : {
-      BOLD          : [ 1, 22 ],
-      DIM           : [ 2, 22 ],
-      HIDDEN        : [ 8, 28 ],
-      INVERSE       : [ 7, 27 ],
-      ITALIC        : [ 3, 23 ],
-      STRIKETHROUGH : [ 9, 29 ],
-      UNDERLINE     : [ 4, 24 ]
+      BOLD          : [ 1 ],
+      FAINT         : [ 2 ],
+      ITALIC        : [ 3 ],
+      UNDERLINE     : [ 4 ],
+      SLOW_BLINK    : [ 5 ],
+      RAPID_BLINK   : [ 6 ],
+      INVERSE       : [ 7 ],
+      HIDDEN        : [ 8 ],
+      STRIKETHROUGH : [ 9 ],
+      FRAMED        : [ 51 ],
+      ENCIRCLED     : [ 52 ],
+      OVERLINED     : [ 53 ]
     }
   },
   funcs         = {},
@@ -70,10 +99,10 @@ const
       let func = function () {
 
         let
-          args    = util.format.apply(null, Object.keys(arguments).length > 0 ? arguments : [ this.toString() ])
+          args    = util.format.apply(null, [ this.toString() ])
         ;
 
-        return `\u001b[${vals[0]}m${args}\u001b[${vals[1]}m`;
+        return `\u001b[${vals[0]}m${args}\u001b[0m`;
 
       };
 
@@ -99,7 +128,9 @@ function strip(string) {
 
 // create color functions
 createFuncs(codes.COLORS);
+createFuncs(codes.BRIGHT, 'bright_');
 createFuncs(codes.BACKGROUND, 'bg_');
+createFuncs(codes.BRIGHT_BACKGROUND, 'bright_bg_');
 createFuncs(codes.STYLES);
 
 
