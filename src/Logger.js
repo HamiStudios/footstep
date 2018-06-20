@@ -30,13 +30,11 @@ const
         return `${hours}:${minutes}:${seconds}`.magenta;
 
       },
-      /* istanbul ignore next */
       message   : function (data) {
 
         return data.message;
 
       },
-      /* istanbul ignore next */
       type      : function (data) {
 
         switch (data.type) {
