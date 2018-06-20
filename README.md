@@ -3,8 +3,8 @@
 # footstep  
 footstep is a simple robust logger for [nodejs](https://nodejs.org/en/)  
 
-[![Build Status](https://travis-ci.org/hamistudios/footstep.svg?branch=master)](https://travis-ci.org/hamistudios/footstep)
-[![Coverage Status](https://coveralls.io/repos/github/hamistudios/footstep/badge.svg?branch=master)](https://coveralls.io/github/hamistudios/footstep?branch=master)
+[![Build Status](https://travis-ci.org/HamiStudios/footstep.svg?branch=master)](https://travis-ci.org/HamiStudios/footstep)
+[![Coverage Status](https://coveralls.io/repos/github/HamiStudios/footstep/badge.svg?branch=master)](https://coveralls.io/github/HamiStudios/footstep?branch=master)
 [![npm version](https://img.shields.io/npm/v/@hamistudios/footstep.svg)](https://www.npmjs.com/package/@hamistudios/footstep)
 [![license](https://img.shields.io/github/license/hamistudios/footstep.svg)](https://github.com/hamistudios/footstep/blob/master/LICENSE.md)
 
