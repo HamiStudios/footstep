@@ -3,8 +3,10 @@
 # footstep  
 footstep is a simple robust logger for [nodejs](https://nodejs.org/en/)  
 
-![npm version](https://img.shields.io/npm/v/@hamistudios/footstep.svg?style=flat-square)
-![license](https://img.shields.io/github/license/hamistudios/footstep.svg?style=flat-square)
+[![Build Status](https://travis-ci.org/hamistudios/footstep.svg?branch=master)](https://travis-ci.org/hamistudios/footstep)
+[![Coverage Status](https://coveralls.io/repos/github/hamistudios/footstep/badge.svg?branch=master)](https://coveralls.io/github/hamistudios/footstep?branch=master)
+[![npm version](https://img.shields.io/npm/v/@hamistudios/footstep.svg)](https://www.npmjs.com/package/@hamistudios/footstep)
+[![license](https://img.shields.io/github/license/hamistudios/footstep.svg)](https://github.com/hamistudios/footstep/blob/master/LICENSE.md)
 
 
 ### Installation  
@@ -40,23 +42,23 @@ logger.setDebug(true);
 #### Options  
 Footstep comes with a lot of useful options to help customize your log messages including, custom streams, prefixes and functional expansions.   
   
-| variables       | default                                            | type     |
-|-----------------|----------------------------------------------------|----------|
-| streams.verbose | process.stdout                                     | Stream   |
-| streams.info    | process.stdout                                     | Stream   |
-| streams.error   | process.stderr                                     | Stream   |
-| streams.warning | process.stdout                                     | Stream   |
-| streams.notice  | process.stdout                                     | Stream   |
-| streams.debug   | process.stdout                                     | Stream   |
-| streams.log     | process.stdout                                     | Stream   |
-| format          | [{{date}}] {{type}}: {{message}}                   | String   |
-| formats.date    | [Function() {}](/src/Logger.js#L59)                | Function |
-| formats.message | [Function() {}](/src/Logger.js#L71)                | Function |
-| formats.type    | [Function() {}](/src/Logger.js#L76)                | Function |
-| prefix          |                                                    | String   |
-| eol             | [os.EOL](https://nodejs.org/api/os.html#os_os_eol) | String   |
-| debug           | false                                              | Boolean  |
-| verbose         | false                                              | Boolean  |
+| variables       | default                                            | type                 |
+|-----------------|----------------------------------------------------|----------------------|
+| streams.verbose | process.stdout                                     | Stream&#124;Function |
+| streams.info    | process.stdout                                     | Stream&#124;Function |
+| streams.error   | process.stderr                                     | Stream&#124;Function |
+| streams.warning | process.stdout                                     | Stream&#124;Function |
+| streams.notice  | process.stdout                                     | Stream&#124;Function |
+| streams.debug   | process.stdout                                     | Stream&#124;Function |
+| streams.log     | process.stdout                                     | Stream&#124;Function |
+| format          | [{{date}}] {{type}}: {{message}}                   | String               |
+| formats.date    | [Function() {}](/src/Logger.js#L59)                | Function             |
+| formats.message | [Function() {}](/src/Logger.js#L71)                | Function             |
+| formats.type    | [Function() {}](/src/Logger.js#L76)                | Function             |
+| prefix          |                                                    | String               |
+| eol             | [os.EOL](https://nodejs.org/api/os.html#os_os_eol) | String               |
+| debug           | false                                              | Boolean              |
+| verbose         | false                                              | Boolean              |
 
 #### Custom expansions  
   
@@ -68,30 +70,31 @@ const
     format  : '[{{dow}}] {{message}}',
     formats : {
       dow     : function() {
-	    let
-	      days  = ['Sunday','Monday','Tuesday',
-	               'Wednesday','Thursday','Friday', 
-	               'Saturday'],
-	      date  = new Date()
-	    ;
+        let
+          days  = [ 'Sunday','Monday','Tuesday',
+                    'Wednesday','Thursday','Friday', 
+                    'Saturday' ],
+          date  = new Date()
+        ;
+        
         return days[date.getDay()];  
       }  
     }
   }
 ;
+
+let logger = new Logger(options);
+
+logger.log('Hello World'); // => [Thursday] Hello World 
 ```  
   
-Output:  
-`[Thursday] Hello World`  
-  
-  
-#### Streams  
+#### Streams
   
 You can set the stream to anything with the instance of [`Stream`](https://nodejs.org/api/stream.html) including process.stdout, process.stderr, fs streams, HTTP streams etc.
 
 
 ### Colors
-Footstep has built in support for colors and styles with help & similar syntax to [colors.js](https://github.com/Marak/colors.js).
+Footstep has built in support for colors and styles, you can use these to bring your logs to life.
 
 #### Usage
 ```javascript  
@@ -107,29 +110,48 @@ console.log(color.strip('I am no color'.yellow));
 #### List of colors & styles
 - .reset
 - .black
-- .blue
-- .cyan
-- .gray
-- .green
-- .grey
-- .magenta
 - .red
-- .white
+- .green
 - .yellow
+- .blue
+- .magenta
+- .cyan
+- .white
+- .gray
+- .gray
+- .bright_black
+- .bright_red
+- .bright_green
+- .bright_yellow
+- .bright_blue
+- .bright_magenta
+- .bright_cyan
+- .bright_white
 - .bg_black
-- .bg_blue
-- .bg_cyan
-- .bg_gray
-- .bg_green
-- .bg_grey
-- .bg_magenta
 - .bg_red
-- .bg_white
+- .bg_green
 - .bg_yellow
+- .bg_blue
+- .bg_magenta
+- .bg_cyan
+- .bg_white
+- .bright_bg_black
+- .bright_bg_red
+- .bright_bg_green
+- .bright_bg_yellow
+- .bright_bg_blue
+- .bright_bg_magenta
+- .bright_bg_cyan
+- .bright_bg_white
 - .bold
-- .dim
-- .hidden
-- .inverse
+- .faint
 - .italic
-- .strikethrough
 - .underline
+- .slow_blink
+- .rapid_blink
+- .inverse
+- .hidden
+- .strikethrough
+- .framed
+- .encircled
+- .overlined
