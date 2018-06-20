@@ -1,8 +1,8 @@
 const
   // modules
-  colors    = require('./../src/Colors'),
-  Logger    = require('./../src/Logger'),
-  stream    = require('stream')
+  colors        = require('./../src/Colors'),
+  Logger        = require('./../src/Logger'),
+  { Writable }  = require('stream')
 ;
 
 let
@@ -14,14 +14,18 @@ describe('generic tests', () => {
   beforeEach(() => {
 
     let
-      devNull = new stream.Writable
+      devNull = new Writable({
+        
+        write(chunk, encoding, callback) {
+          callback();
+        },
+        
+        writev(chunks, callback) {
+          callback()
+        }
+        
+      })
     ;
-
-    devNull._write = function(chunk, encoding, callback) {
-
-      callback();
-
-    };
 
     logger    = new Logger({
       streams: {

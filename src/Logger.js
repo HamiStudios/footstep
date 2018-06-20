@@ -109,7 +109,7 @@ Logger.prototype._log = function(type, formatted) {
 
   if(this.options.streams[type] !== undefined &&
      typeof this.options.streams[type]._write === 'function') { // check if the stream is a Writable stream
-
+    
     // write the formatted log output to the stream
     this.options.streams[type].write(
       formatted
