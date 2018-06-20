@@ -2,6 +2,8 @@ const
   // modules
   util      = require('util'),
   os        = require('os'),
+  Stream    = require('stream'),
+  Writable  = Stream.Writable,
   merge     = require('circle-assign'),
   colors    = require('./Colors'),
 
@@ -39,19 +41,19 @@ const
 
         switch (data.type) {
           case 'verbose':
-            return data.type.toString().bold.cyan;
+            return ` ${data.type.toString()} `.bg_magenta.white;
           case 'info':
-            return data.type.toString().cyan;
+            return ` ${data.type.toString()} `.bright_bg_cyan.black;
           case 'error':
-            return data.type.toString().red;
+            return ` ${data.type.toString()} `.bg_red.white;
           case 'warning':
-            return data.type.toString().yellow;
+            return ` ${data.type.toString()} `.bright_bg_yellow.black;
           case 'notice':
-            return data.type.toString().bg_blue.white;
+            return ` ${data.type.toString()} `.bg_blue.white;
           case 'debug':
-            return data.type.toString().bg_white.black;
+            return ` ${data.type.toString()} `.bg_white.black;
           case 'log':
-            return data.type;
+            return ` ${data.type} `;
         }
 
       }
@@ -69,14 +71,14 @@ const
  * Create a new Logger instance
  *
  * @param {Object} [options]
- * @param {Stream} [options.streams.verbose]
- * @param {Stream} [options.streams.info]
- * @param {Stream} [options.streams.error]
- * @param {Stream} [options.streams.warning]
- * @param {Stream} [options.streams.notice]
- * @param {Stream} [options.streams.debug]
- * @param {Stream} [options.streams.log]
- * @param {String} [options.format]
+ * @param {Stream|Function} [options.streams.verbose]
+ * @param {Stream|Function} [options.streams.info]
+ * @param {Stream|Function} [options.streams.error]
+ * @param {Stream|Function} [options.streams.warning]
+ * @param {Stream|Function} [options.streams.notice]
+ * @param {Stream|Function} [options.streams.debug]
+ * @param {Stream|Function} [options.streams.log]
+ * @param {String|Function} [options.format]
  * @param {Function} [options.formats.date]
  * @param {Function} [options.formats.message]
  * @param {Function} [options.formats.type]
@@ -100,7 +102,33 @@ function Logger(options) {
  */
 Logger.prototype.setOptions = function(options) {
 
-  this.options = merge(defaults, this.options, options);
+  this.options = merge(this.options, options);
+
+};
+
+Logger.prototype._log = function(type, formatted) {
+
+  if(this.options.streams[type] instanceof Writable) { // check if the stream is a Writable stream
+
+    // write the formatted log output to the stream
+    this.options.streams[type].write(
+      formatted
+    );
+
+    return formatted;
+
+  } else if(typeof this.options.streams[type] === 'function') { // check if the stream is a function
+
+    // run the function with the formatted argument
+    this.options.streams[type](formatted);
+
+    return formatted;
+
+  } else {
+
+    return new Error(`Stream for '${type}' is not a Writable stream or function.`);
+
+  }
 
 };
 
@@ -142,6 +170,11 @@ Logger.prototype._format = function () {
       // format the message using that function
       formatted = formatted.replace(replace[i], this.options.formats[value](data));
 
+    } else {
+
+      // just set it as the value
+      formatted = formatted.replace(replace[i], this.options.formats[value]);
+
     }
 
   }
@@ -171,12 +204,11 @@ Logger.prototype.verbose = function () {
       formatted = this._format.apply(this, args)
     ;
 
-    // write the formatted log output to the verbose stream
-    this.options.streams.verbose.write(
-      formatted
-    );
+    return this._log('verbose', formatted);
 
-    return formatted;
+  } else {
+
+    return false;
 
   }
 
@@ -200,12 +232,7 @@ Logger.prototype.info = function () {
     formatted = this._format.apply(this, args)
   ;
 
-  // write the formatted log output to the info stream
-  this.options.streams.info.write(
-    formatted
-  );
-
-  return formatted;
+  return this._log('info', formatted);
 
 };
 
@@ -227,12 +254,7 @@ Logger.prototype.error = function () {
     formatted = this._format.apply(this, args)
   ;
 
-  // write the formatted log output to the error stream
-  this.options.streams.error.write(
-    formatted
-  );
-
-  return formatted;
+  return this._log('error', formatted);
 
 };
 
@@ -254,12 +276,7 @@ Logger.prototype.warning = function () {
     formatted = this._format.apply(this, args)
   ;
 
-  // write the formatted log output to the warning stream
-  this.options.streams.warning.write(
-    formatted
-  );
-
-  return formatted;
+  return this._log('warning', formatted);
 
 };
 
@@ -281,12 +298,7 @@ Logger.prototype.notice = function () {
     formatted = this._format.apply(this, args)
   ;
 
-  // write the formatted log output to the notice stream
-  this.options.streams.notice.write(
-    formatted
-  );
-
-  return formatted;
+  return this._log('notice', formatted);;
 
 };
 
@@ -311,12 +323,11 @@ Logger.prototype.debug = function () {
       formatted = this._format.apply(this, args)
     ;
 
-    // write the formatted log output to the debug stream
-    this.options.streams.debug.write(
-      formatted
-    );
+    return this._log('debug', formatted);
 
-    return formatted;
+  } else {
+
+    return false;
 
   }
 
@@ -340,12 +351,7 @@ Logger.prototype.log = function () {
     formatted = this._format.apply(this, args)
   ;
 
-  // write the formatted log output to the log stream
-  this.options.streams.log.write(
-    formatted
-  );
-
-  return formatted;
+  return this._log('log', formatted);
 
 };
 
