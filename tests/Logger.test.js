@@ -6,26 +6,21 @@ const
 ;
 
 let
-  logger  = undefined
+  logger  = undefined,
+  devNull = new Writable()
 ;
+
+devNull.write = (c, e, cb) => {
+  if(typeof cb === 'function') cb();
+};
+
+devNull._write = (c, e, cb) => {
+  if(typeof cb === 'function') cb();
+};
 
 describe('generic tests', () => {
 
   beforeEach(() => {
-
-    let
-      devNull = new Writable({
-        
-        write(chunk, encoding, callback) {
-          callback();
-        },
-        
-        writev(chunks, callback) {
-          callback()
-        }
-        
-      })
-    ;
 
     logger    = new Logger({
       streams: {
