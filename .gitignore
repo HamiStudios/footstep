@@ -1,18 +1,8 @@
+# Project
 node_modules/
 coverage/
 
 # OS or Editor folders
 .DS_Store
-._*
 Thumbs.db
-.cache
-.project
-.settings
-.tmproj
-.docpad.db
-*.esproj
-nbproject
-*.sublime-project
-*.sublime-workspace
-.build*
 .idea
