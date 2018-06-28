@@ -23,42 +23,56 @@ let logger = new Logger(options);
   
 ### Usage  
 ```javascript  
-logger.verbose("Hello World");  // => [10:34:35] verbose: Hello World  
-logger.info("Hello World");     // => [10:34:35] info: Hello World  
-logger.error("Hello World");    // => [10:34:35] error: Hello World  
-logger.warning("Hello World");  // => [10:34:35] warning: Hello World  
-logger.notice("Hello World");   // => [10:34:35] notice: Hello World  
-logger.debug("Hello World");    // => [10:34:35] debug: Hello World  
-logger.log("Hello World");      // => [10:34:35] log: Hello World  
-  
-  
-// verbose & debug will not execute if they  
-// aren't enabled. You can enable/disable them  
-// via the options or the following functions.  
-logger.setVerbose(true);  
-logger.setDebug(true);  
+logger.verbose("Hello World");  // => [10:34:35] verbose: Hello World
+logger.info("Hello World");     // => [10:34:35] info: Hello World
+logger.error("Hello World");    // => [10:34:35] error: Hello World
+logger.warning("Hello World");  // => [10:34:35] warning: Hello World
+logger.notice("Hello World");   // => [10:34:35] notice: Hello World
+logger.debug("Hello World");    // => [10:34:35] debug: Hello World
+logger.log("Hello World");      // => [10:34:35] log: Hello World
+```
+
+#### Helper methods
+```javascript
+// setting verbose & debug to true
+logger.setVerbose(value: boolean)  
+logger.setDebug(value: boolean)
+
+// you can clear stdout via
+logger.clear(full: boolean)
+
+// you can also print a blank line via
+logger.blank(stream: string)
+
+// accessing log history provides and array of past
+// logs (max log history specified via options.maxLogHistory)
+logger.getPastLogs()
 ```
   
 #### Options  
 Footstep comes with a lot of useful options to help customize your log messages including, custom streams, prefixes and functional expansions.   
   
-| variables       | default                                            | type                 |
-|-----------------|----------------------------------------------------|----------------------|
-| streams.verbose | process.stdout                                     | Stream&#124;Function |
-| streams.info    | process.stdout                                     | Stream&#124;Function |
-| streams.error   | process.stderr                                     | Stream&#124;Function |
-| streams.warning | process.stdout                                     | Stream&#124;Function |
-| streams.notice  | process.stdout                                     | Stream&#124;Function |
-| streams.debug   | process.stdout                                     | Stream&#124;Function |
-| streams.log     | process.stdout                                     | Stream&#124;Function |
-| format          | [{{date}}] {{type}}: {{message}}                   | String               |
-| formats.date    | [Function() {}](/src/Logger.js#L59)                | Function             |
-| formats.message | [Function() {}](/src/Logger.js#L71)                | Function             |
-| formats.type    | [Function() {}](/src/Logger.js#L76)                | Function             |
-| prefix          |                                                    | String               |
-| eol             | [os.EOL](https://nodejs.org/api/os.html#os_os_eol) | String               |
-| debug           | false                                              | Boolean              |
-| verbose         | false                                              | Boolean              |
+| variables           | default                                            | type                 |
+|-----------------    |----------------------------------------------------|----------------------|
+| streams.verbose     | process.stdout                                     | Stream&#124;Function |
+| streams.info        | process.stdout                                     | Stream&#124;Function |
+| streams.error       | process.stderr                                     | Stream&#124;Function |
+| streams.warning     | process.stdout                                     | Stream&#124;Function |
+| streams.notice      | process.stdout                                     | Stream&#124;Function |
+| streams.debug       | process.stdout                                     | Stream&#124;Function |
+| streams.log         | process.stdout                                     | Stream&#124;Function |
+| streams.clear       | process.stdout                                     | Stream&#124;Function |
+| format              | [{{date}}] {{type}}: {{message}}                   | String               |
+| formats.date        | [Function() {}](/src/Logger.js#L23)                | Function             |
+| formats.message     | [Function() {}](/src/Logger.js#L35)                | Function             |
+| formats.type        | [Function() {}](/src/Logger.js#L40)                | Function             |
+| prefix              |                                                    | String               |
+| eol                 | [os.EOL](https://nodejs.org/api/os.html#os_os_eol) | String               |
+| debug               | false                                              | Boolean              |
+| verbose             | false                                              | Boolean              |
+| maxLogHistory       | 50                                                 | Integer              |
+| clearCodes.full     | \x1b[2J                                            | String               |
+| clearCodes.standard | \x1b[0f                                            | String               |
 
 #### Custom expansions  
   
