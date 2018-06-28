@@ -1,5 +1,5 @@
 const
-	Logger    = require('./src/Logger'),
+  Logger    = require('./src/Logger'),
   Colors    = require('./src/Colors')
 ;
 
