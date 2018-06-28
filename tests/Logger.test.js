@@ -56,7 +56,7 @@ describe('generic tests', () => {
 
     logger.warning('test');
 
-    expect(logger._getPastLogs()[0].error).toBeTruthy();
+    expect(logger.getPastLogs()[0].error).toBeTruthy();
 
   });
 
@@ -72,7 +72,7 @@ describe('generic tests', () => {
 
     logger.log('test');
 
-    expect(logger._getPastLogs()[0].output).toBe('[date]  log : test notAFunc');
+    expect(logger.getPastLogs()[0].output).toBe('[date]  log : test notAFunc');
 
   });
 
@@ -83,7 +83,7 @@ describe('generic tests', () => {
     logger.verbose('verbose test');
 
     let
-      last_log = logger._getPastLogs()[0]
+      last_log = logger.getPastLogs()[0]
     ;
 
     expect(last_log.type === 'verbose' && last_log.message === 'verbose test').toBeTruthy();
@@ -97,7 +97,7 @@ describe('generic tests', () => {
     logger.debug('debug test');
 
     let
-      last_log = logger._getPastLogs()[0]
+      last_log = logger.getPastLogs()[0]
     ;
 
     expect(last_log.type === 'debug' && last_log.message === 'debug test').toBeTruthy();
@@ -111,7 +111,7 @@ describe('generic tests', () => {
     logger.verbose('verbose test');
 
     let
-      last_log = logger._getPastLogs()[0]
+      last_log = logger.getPastLogs()[0]
     ;
 
     expect(last_log).toBeFalsy();
@@ -125,7 +125,7 @@ describe('generic tests', () => {
     logger.debug('debug test');
 
     let
-      last_log = logger._getPastLogs()[0]
+      last_log = logger.getPastLogs()[0]
     ;
 
     expect(last_log).toBeFalsy();
@@ -137,7 +137,7 @@ describe('generic tests', () => {
     logger.blank();
 
     let
-      last_log  = logger._getPastLogs()[0]
+      last_log  = logger.getPastLogs()[0]
     ;
 
     expect(last_log.type === 'blank' && last_log.message === '\n').toBeTruthy();
@@ -149,7 +149,7 @@ describe('generic tests', () => {
     logger.blank('info');
 
     let
-      last_log  = logger._getPastLogs()[0]
+      last_log  = logger.getPastLogs()[0]
     ;
 
     expect(last_log.type === 'blank' && last_log.message === '\n' && last_log.stream === 'info').toBeTruthy();
@@ -161,7 +161,7 @@ describe('generic tests', () => {
     logger.blank('error');
 
     let
-      last_log  = logger._getPastLogs()[0]
+      last_log  = logger.getPastLogs()[0]
     ;
 
     expect(last_log.type === 'blank' && last_log.message === '\n' && last_log.stream === 'error').toBeTruthy();
@@ -173,7 +173,7 @@ describe('generic tests', () => {
     logger.blank('warning');
 
     let
-      last_log  = logger._getPastLogs()[0]
+      last_log  = logger.getPastLogs()[0]
     ;
 
     expect(last_log.type === 'blank' && last_log.error).toBeTruthy();
@@ -185,7 +185,7 @@ describe('generic tests', () => {
     logger.clear();
 
     let
-      last_log  = logger._getPastLogs()[0]
+      last_log  = logger.getPastLogs()[0]
     ;
 
     expect(last_log.type === 'clear' && last_log.message === '\x1b[2J' && last_log.stream === 'clear').toBeTruthy();
@@ -197,7 +197,7 @@ describe('generic tests', () => {
     logger.clear();
 
     let
-      last_log  = logger._getPastLogs()[0]
+      last_log  = logger.getPastLogs()[0]
     ;
 
     expect(last_log.type === 'clear' && last_log.message === '\x1b[2J' && last_log.stream === 'clear').toBeTruthy();
@@ -209,7 +209,7 @@ describe('generic tests', () => {
     logger.clear(false);
 
     let
-      last_log  = logger._getPastLogs()[0]
+      last_log  = logger.getPastLogs()[0]
     ;
 
     expect(last_log.type === 'clear' && last_log.message === '\x1b[0f' && last_log.stream === 'clear').toBeTruthy();
@@ -238,7 +238,7 @@ describe('generic tests', () => {
     logger.clear();
 
     let
-      last_log  = logger._getPastLogs()[0]
+      last_log  = logger.getPastLogs()[0]
     ;
 
     expect(last_log.type === 'clear' && last_log.error).toBeTruthy();
@@ -262,7 +262,7 @@ describe('generic tests', () => {
     logger._addToLogHistory(history_object); // maxed out
     logger._addToLogHistory(history_object);
 
-    expect(logger._getPastLogs()).toHaveLength(3);
+    expect(logger.getPastLogs()).toHaveLength(3);
 
   });
 
@@ -282,7 +282,7 @@ describe('generic tests', () => {
 
     logger._addToLogHistory(history_object);
 
-    expect(logger._getPastLogs()).toHaveLength(1);
+    expect(logger.getPastLogs()).toHaveLength(1);
 
   });
 
@@ -370,7 +370,7 @@ describe('log methods', () => {
 
     logger.verbose('testing');
 
-    expect(colors.strip(logger._getPastLogs()[0].output)).toBe('[date]  verbose : testing');
+    expect(colors.strip(logger.getPastLogs()[0].output)).toBe('[date]  verbose : testing');
 
   });
 
@@ -378,7 +378,7 @@ describe('log methods', () => {
 
     logger.info('testing');
 
-    expect(colors.strip(logger._getPastLogs()[0].output)).toBe('[date]  info : testing');
+    expect(colors.strip(logger.getPastLogs()[0].output)).toBe('[date]  info : testing');
 
   });
 
@@ -386,7 +386,7 @@ describe('log methods', () => {
 
     logger.error('testing');
 
-    expect(colors.strip(logger._getPastLogs()[0].output)).toBe('[date]  error : testing');
+    expect(colors.strip(logger.getPastLogs()[0].output)).toBe('[date]  error : testing');
 
   });
 
@@ -394,7 +394,7 @@ describe('log methods', () => {
 
     logger.warning('testing');
 
-    expect(colors.strip(logger._getPastLogs()[0].output)).toBe('[date]  warning : testing');
+    expect(colors.strip(logger.getPastLogs()[0].output)).toBe('[date]  warning : testing');
 
   });
 
@@ -402,7 +402,7 @@ describe('log methods', () => {
 
     logger.notice('testing');
 
-    expect(colors.strip(logger._getPastLogs()[0].output)).toBe('[date]  notice : testing');
+    expect(colors.strip(logger.getPastLogs()[0].output)).toBe('[date]  notice : testing');
 
   });
 
@@ -410,7 +410,7 @@ describe('log methods', () => {
 
     logger.debug('testing');
 
-    expect(colors.strip(logger._getPastLogs()[0].output)).toBe('[date]  debug : testing');
+    expect(colors.strip(logger.getPastLogs()[0].output)).toBe('[date]  debug : testing');
 
   });
 
@@ -418,7 +418,7 @@ describe('log methods', () => {
 
     logger.log('testing');
 
-    expect(colors.strip(logger._getPastLogs()[0].output)).toBe('[date]  log : testing');
+    expect(colors.strip(logger.getPastLogs()[0].output)).toBe('[date]  log : testing');
 
   });
 

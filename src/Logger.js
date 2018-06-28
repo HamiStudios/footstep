@@ -140,7 +140,7 @@ Logger.prototype._log = function(type, formatted) {
 
   } else {
 
-    this._getPastLogs()[0].error = new Error(`Stream for '${type}' is not a Writable stream or function.`);
+    this.getPastLogs()[0].error = new Error(`Stream for '${type}' is not a Writable stream or function.`);
 
     return false;
 
@@ -250,9 +250,8 @@ Logger.prototype._addToLogHistory = function(log) {
  * Get the past logs
  *
  * @returns {Object[]} The past logs
- * @private
  */
-Logger.prototype._getPastLogs = function() {
+Logger.prototype.getPastLogs = function() {
 
   return this._past_logs;
 
