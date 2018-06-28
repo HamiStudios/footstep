@@ -34,7 +34,8 @@ describe('generic tests', () => {
       },
       eol    : '',
       verbose: true,
-      debug  : true
+      debug  : true,
+      maxLogHistory: 3
     });
 
   });
@@ -53,7 +54,9 @@ describe('generic tests', () => {
 
   test('when the specified stream is not a Writable stream or a function it should error', () => {
 
-    expect(logger.warning('test')).toBeInstanceOf(Error);
+    logger.warning('test');
+
+    expect(logger._getPastLogs()[0].error).toBeTruthy();
 
   });
 
@@ -67,7 +70,9 @@ describe('generic tests', () => {
       }
     });
 
-    expect(logger.log('test')).toBe('[date]  log : test notAFunc');
+    logger.log('test');
+
+    expect(logger._getPastLogs()[0].output).toBe('[date]  log : test notAFunc');
 
   });
 
@@ -75,7 +80,13 @@ describe('generic tests', () => {
 
     logger.options.verbose = true;
 
-    expect(logger.verbose('test')).toBeTruthy();
+    logger.verbose('verbose test');
+
+    let
+      last_log = logger._getPastLogs()[0]
+    ;
+
+    expect(last_log.type === 'verbose' && last_log.message === 'verbose test').toBeTruthy();
 
   });
 
@@ -83,7 +94,13 @@ describe('generic tests', () => {
 
     logger.options.debug = true;
 
-    expect(logger.debug('test')).toBeTruthy();
+    logger.debug('debug test');
+
+    let
+      last_log = logger._getPastLogs()[0]
+    ;
+
+    expect(last_log.type === 'debug' && last_log.message === 'debug test').toBeTruthy();
 
   });
 
@@ -91,7 +108,13 @@ describe('generic tests', () => {
 
     logger.options.verbose = false;
 
-    expect(logger.verbose('test')).toBeFalsy();
+    logger.verbose('verbose test');
+
+    let
+      last_log = logger._getPastLogs()[0]
+    ;
+
+    expect(last_log).toBeFalsy();
 
   });
 
@@ -99,7 +122,167 @@ describe('generic tests', () => {
 
     logger.options.debug = false;
 
-    expect(logger.debug('test')).toBeFalsy();
+    logger.debug('debug test');
+
+    let
+      last_log = logger._getPastLogs()[0]
+    ;
+
+    expect(last_log).toBeFalsy();
+
+  });
+
+  test('.blank() should log a blank line', () => {
+
+    logger.blank();
+
+    let
+      last_log  = logger._getPastLogs()[0]
+    ;
+
+    expect(last_log.type === 'blank' && last_log.message === '\n').toBeTruthy();
+
+  });
+
+  test('.blank() should log a blank line to the specified stream (Writable Stream)', () => {
+
+    logger.blank('info');
+
+    let
+      last_log  = logger._getPastLogs()[0]
+    ;
+
+    expect(last_log.type === 'blank' && last_log.message === '\n' && last_log.stream === 'info').toBeTruthy();
+
+  });
+
+  test('.blank() should log a blank line to the specified stream (Function)', () => {
+
+    logger.blank('error');
+
+    let
+      last_log  = logger._getPastLogs()[0]
+    ;
+
+    expect(last_log.type === 'blank' && last_log.message === '\n' && last_log.stream === 'error').toBeTruthy();
+
+  });
+
+  test('.blank() should return an error if the specified stream stream is not a Writable stream or function', () => {
+
+    logger.blank('warning');
+
+    let
+      last_log  = logger._getPastLogs()[0]
+    ;
+
+    expect(last_log.type === 'blank' && last_log.error).toBeTruthy();
+
+  });
+
+  test('.clear() should clear the specified clear stream (Writable Stream)', () => {
+
+    logger.clear();
+
+    let
+      last_log  = logger._getPastLogs()[0]
+    ;
+
+    expect(last_log.type === 'clear' && last_log.message === '\x1b[2J' && last_log.stream === 'clear').toBeTruthy();
+
+  });
+
+  test('.clear() should clear the specified clear stream (Function)', () => {
+
+    logger.clear();
+
+    let
+      last_log  = logger._getPastLogs()[0]
+    ;
+
+    expect(last_log.type === 'clear' && last_log.message === '\x1b[2J' && last_log.stream === 'clear').toBeTruthy();
+
+  });
+
+  test('.clear() should not perform a full clear when full is set to false', () => {
+
+    logger.clear(false);
+
+    let
+      last_log  = logger._getPastLogs()[0]
+    ;
+
+    expect(last_log.type === 'clear' && last_log.message === '\x1b[0f' && last_log.stream === 'clear').toBeTruthy();
+
+  });
+
+  test('.clear() should pass the clear term code to the function if specified instead of a stream', () => {
+
+    let
+      returned_code = ''
+    ;
+
+    logger.options.streams.clear = function(code) { returned_code = code; };
+    logger.options.clearCodes.full = 'CLEAR_CODE';
+
+    logger.clear();
+
+    expect(returned_code).toBe('CLEAR_CODE');
+
+  });
+
+  test('.clear() should return an error if the clear stream is not a Writable stream or function', () => {
+
+    logger.options.streams.clear = 'invalid';
+
+    logger.clear();
+
+    let
+      last_log  = logger._getPastLogs()[0]
+    ;
+
+    expect(last_log.type === 'clear' && last_log.error).toBeTruthy();
+
+  });
+
+  test('The history handler should remove the oldest log when the history is maxed out', () => {
+
+    let
+      history_object  = {
+        type: 'test',
+        message: 'test',
+        output: 'test',
+        stream: 'test',
+        timestamp: new Date()
+      }
+    ;
+
+    logger._addToLogHistory(history_object);
+    logger._addToLogHistory(history_object);
+    logger._addToLogHistory(history_object); // maxed out
+    logger._addToLogHistory(history_object);
+
+    expect(logger._getPastLogs()).toHaveLength(3);
+
+  });
+
+  test('The history handler should redefine the history array if modified (set to non-array)', () => {
+
+    logger._past_logs = {};
+
+    let
+      history_object  = {
+        type: 'test',
+        message: 'test',
+        output: 'test',
+        stream: 'test',
+        timestamp: new Date()
+      }
+    ;
+
+    logger._addToLogHistory(history_object);
+
+    expect(logger._getPastLogs()).toHaveLength(1);
 
   });
 
@@ -185,43 +368,57 @@ describe('log methods', () => {
 
   test('.verbose() should format the arguments into a verbose log', () => {
 
-    expect(colors.strip(logger.verbose('testing'))).toBe('[date]  verbose : testing');
+    logger.verbose('testing');
+
+    expect(colors.strip(logger._getPastLogs()[0].output)).toBe('[date]  verbose : testing');
 
   });
 
   test('.info() should format the arguments into a info log', () => {
 
-    expect(colors.strip(logger.info('testing'))).toBe('[date]  info : testing');
+    logger.info('testing');
+
+    expect(colors.strip(logger._getPastLogs()[0].output)).toBe('[date]  info : testing');
 
   });
 
   test('.error() should format the arguments into a error log', () => {
 
-    expect(colors.strip(logger.error('testing'))).toBe('[date]  error : testing');
+    logger.error('testing');
+
+    expect(colors.strip(logger._getPastLogs()[0].output)).toBe('[date]  error : testing');
 
   });
 
   test('.warning() should format the arguments into a warning log', () => {
 
-    expect(colors.strip(logger.warning('testing'))).toBe('[date]  warning : testing');
+    logger.warning('testing');
+
+    expect(colors.strip(logger._getPastLogs()[0].output)).toBe('[date]  warning : testing');
 
   });
 
   test('.notice() should format the arguments into a notice log', () => {
 
-    expect(colors.strip(logger.notice('testing'))).toBe('[date]  notice : testing');
+    logger.notice('testing');
+
+    expect(colors.strip(logger._getPastLogs()[0].output)).toBe('[date]  notice : testing');
 
   });
 
   test('.debug() should format the arguments into a debug log', () => {
 
-    expect(colors.strip(logger.debug('testing'))).toBe('[date]  debug : testing');
+    logger.debug('testing');
+
+    expect(colors.strip(logger._getPastLogs()[0].output)).toBe('[date]  debug : testing');
 
   });
 
   test('.log() should format the arguments into a log log', () => {
 
-    expect(colors.strip(logger.log('testing'))).toBe('[date]  log : testing');
+    logger.log('testing');
+
+    expect(colors.strip(logger._getPastLogs()[0].output)).toBe('[date]  log : testing');
 
   });
 
