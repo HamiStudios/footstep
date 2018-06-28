@@ -138,7 +138,7 @@ Logger.prototype._log = function(type, formatted) {
  * @private
  * @param {any} args
  */
-Logger.prototype._format = function () {
+Logger.prototype._format = function() {
 
   // log format and array of
   let
@@ -189,7 +189,7 @@ Logger.prototype._format = function () {
  *
  * @param {any} args
  */
-Logger.prototype.verbose = function () {
+Logger.prototype.verbose = function() {
 
   // if verbose is enabled proceed
   if(this.options.verbose) {
@@ -220,7 +220,7 @@ Logger.prototype.verbose = function () {
  *
  * @param {any} args
  */
-Logger.prototype.info = function () {
+Logger.prototype.info = function() {
 
   let
     // create array with log type and log args
@@ -242,7 +242,7 @@ Logger.prototype.info = function () {
  *
  * @param {any} args
  */
-Logger.prototype.error = function () {
+Logger.prototype.error = function() {
 
   let
     // create array with log type and log args
@@ -264,7 +264,7 @@ Logger.prototype.error = function () {
  *
  * @param {any} args
  */
-Logger.prototype.warning = function () {
+Logger.prototype.warning = function() {
 
   let
     // create array with log type and log args
@@ -286,7 +286,7 @@ Logger.prototype.warning = function () {
  *
  * @param {any} args
  */
-Logger.prototype.notice = function () {
+Logger.prototype.notice = function() {
 
   let
     // create array with log type and log args
@@ -308,7 +308,7 @@ Logger.prototype.notice = function () {
  *
  * @param {any} args
  */
-Logger.prototype.debug = function () {
+Logger.prototype.debug = function() {
 
   // if debug is enabled proceed
   if(this.options.debug) {
@@ -339,7 +339,7 @@ Logger.prototype.debug = function () {
  *
  * @param {any} args
  */
-Logger.prototype.log = function () {
+Logger.prototype.log = function() {
 
   let
     // create array with log type and log args
@@ -362,7 +362,7 @@ Logger.prototype.log = function () {
  * @param {Boolean} value
  * @returns {Boolean}
  */
-Logger.prototype.setVerbose = function (value) {
+Logger.prototype.setVerbose = function(value) {
 
   this.options.verbose = value;
   return value;
@@ -376,7 +376,7 @@ Logger.prototype.setVerbose = function (value) {
  * @param {Boolean} value
  * @returns {Boolean}
  */
-Logger.prototype.setDebug = function (value) {
+Logger.prototype.setDebug = function(value) {
 
   this.options.debug = value;
   return value;
