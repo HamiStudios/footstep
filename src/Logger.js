@@ -8,17 +8,18 @@ const
 
   // variables
   defaults  = {
-    streams   : {
+    streams       : {
       verbose   : process.stdout,
       info      : process.stdout,
       error     : process.stderr,
       warning   : process.stdout,
       notice    : process.stdout,
       debug     : process.stdout,
-      log       : process.stdout
+      log       : process.stdout,
+      clear     : process.stdout
     },
-    format    : `${'['.gray}{{date}}${']'.gray} {{type}}: {{message}}`,
-    formats   : {
+    format        : `${'['.gray}{{date}}${']'.gray} {{type}}: {{message}}`,
+    formats       : {
       date      : function () {
 
         let
@@ -52,16 +53,21 @@ const
           case 'debug':
             return ` ${data.type.toString()} `.bg_white.black;
           case 'log':
-            return ` ${data.type} `;
+            return ` ${data.type.toString()} `;
         }
 
       }
     },
-    prefix    : '',
-    suffix    : '',
-    eol       : os.EOL,
-    debug     : false,
-    verbose   : false,
+    prefix        : '',
+    suffix        : '',
+    eol           : os.EOL,
+    debug         : false,
+    verbose       : false,
+    maxLogHistory : 50,
+    clearCodes    : {
+      full          : '\x1b[2J',
+      standard      : '\x1b[0f'
+    }
   }
 ;
 
@@ -77,6 +83,7 @@ const
  * @param {Stream|Function} [options.streams.notice]
  * @param {Stream|Function} [options.streams.debug]
  * @param {Stream|Function} [options.streams.log]
+ * @param {Stream|Function} [options.streams.clear]
  * @param {String|Function} [options.format]
  * @param {Function} [options.formats.date]
  * @param {Function} [options.formats.message]
@@ -85,12 +92,19 @@ const
  * @param {String} [options.suffix]
  * @param {Boolean} [options.debug]
  * @param {Boolean} [options.verbose]
+ * @param {Object} [options.clearCodes]
+ * @param {String} [options.clearCodes.full]
+ * @param {String} [options.clearCodes.standard]
+ * @param {number} [options.maxLogHistory]
  * @returns {Logger}
  */
 function Logger(options) {
 
   // merge the options with the default options
   this.options = merge(defaults, options);
+
+  // create log history array
+  this._past_logs = [];
 
 }
 
@@ -115,18 +129,20 @@ Logger.prototype._log = function(type, formatted) {
       formatted
     );
 
-    return formatted;
+    return true;
 
   } else if(typeof this.options.streams[type] === 'function') { // check if the stream is a function
 
     // run the function with the formatted argument
     this.options.streams[type](formatted);
 
-    return formatted;
+    return true;
 
   } else {
 
-    return new Error(`Stream for '${type}' is not a Writable stream or function.`);
+    this._getPastLogs()[0].error = new Error(`Stream for '${type}' is not a Writable stream or function.`);
+
+    return false;
 
   }
 
@@ -143,7 +159,10 @@ Logger.prototype._format = function() {
   // log format and array of
   let
     formatted = this.options.format,
-    replace   = formatted.match(/{{(.*?)}}/g)
+    replace   = formatted.match(/{{(.*?)}}/g),
+    args    = [ ...arguments ],
+    type      = args[0],
+    message   = util.format.apply(null, args.slice(1, args.length)) // remove log type from arguments before formatting them
   ;
 
   // go through all the replaceable values and set them accordingly
@@ -153,13 +172,10 @@ Logger.prototype._format = function() {
       // value without {{ }} (function name)
       value   = replace[i].replace(/{{\s?/g, '').replace(/\s?}}/g, ''),
 
-      // array of arguments (log args)
-      args    = [ ...arguments ],
-
       // data for the format functions
       data    = {
-        message : util.format.apply(null, args.slice(1, args.length)), // remove log type from arguments before formatting them
-        type    : arguments[0],
+        message : message,
+        type    : type,
         options : this.options
       }
     ;
@@ -179,8 +195,161 @@ Logger.prototype._format = function() {
 
   }
 
+  let
+    returnValue = this.options.prefix + formatted + this.options.suffix + this.options.eol
+  ;
+
+  this._addToLogHistory({
+    type      : type,
+    message   : message,
+    output    : returnValue,
+    stream    : type.toLowerCase(),
+    timestamp : new Date()
+  });
+
   // return the formatted output with the system EOL
-  return this.options.prefix + formatted + this.options.suffix + this.options.eol;
+  return returnValue;
+
+};
+
+/**
+ * Adds the specified log to the past logs history
+ *
+ * @param {Object} log The log to add
+ * @param {string} log.type The log type
+ * @param {string} log.message The log message
+ * @param {string} log.output The log outputted
+ * @param {string} log.stream The log stream used
+ * @param {Date} log.timestamp The time it was logged
+ * @private
+ */
+Logger.prototype._addToLogHistory = function(log) {
+
+  if(!Array.isArray(this._past_logs)) {
+
+    this._past_logs = [];
+
+  }
+
+  // checks if the logs is larger thant the max size
+  if(this._past_logs.length >= this.options.maxLogHistory) {
+
+    // removes the first log in the array
+    this._past_logs.shift();
+
+    // this is done to reduce the amount of logs kept in memory
+    // to save memory on larger applications
+
+  }
+
+  this._past_logs.push(log);
+
+};
+
+/**
+ * Get the past logs
+ *
+ * @returns {Object[]} The past logs
+ * @private
+ */
+Logger.prototype._getPastLogs = function() {
+
+  return this._past_logs;
+
+};
+
+/**
+ * Clear the console screen (performs on stdout)
+ *
+ * @param {boolean} [full=true] Whether to perform a full clear
+ */
+Logger.prototype.clear = function(full) {
+
+  if(full === undefined ||
+    full === null ||
+    typeof full !== 'boolean') {
+
+    full = true;
+
+  }
+
+  let
+    streamWrite = this.options.streams.clear,
+    code        = full ? this.options.clearCodes.full : this.options.clearCodes.standard,
+    history_log = {
+      type      : 'clear',
+      message   : code,
+      output    : code,
+      stream    : 'clear',
+      timestamp : new Date()
+    }
+  ;
+
+  if(streamWrite !== undefined &&
+    typeof streamWrite.write === 'function') { // check if the stream is a Writable stream
+
+    streamWrite.write(code);
+
+  } else if(typeof streamWrite === 'function') { // check if the stream is a function
+
+    streamWrite(code);
+
+  } else {
+
+    history_log.error = new Error(`Stream for 'clear' is not a Writable stream or function.`);
+
+  }
+
+  this._addToLogHistory(history_log);
+
+  return this;
+
+};
+
+/**
+ * Print a blank line to the specified stream (defaults to stdout)
+ *
+ * @param {string} [stream] The stream key
+ */
+Logger.prototype.blank = function(stream) {
+
+  let
+    streamWrite = process.stdout,
+    history_log = {
+      type      : 'blank',
+      message   : '\n',
+      output    : '\n',
+      stream    : stream || 'stdout',
+      timestamp : new Date()
+    }
+  ;
+
+  if(stream !== undefined &&
+    stream !== null &&
+    typeof stream === 'string') {
+
+    streamWrite = this.options.streams[stream];
+
+  }
+
+  if(streamWrite !== undefined &&
+    typeof streamWrite.write === 'function') { // check if the stream is a Writable stream
+
+    streamWrite.write('\n');
+
+  } else if(typeof streamWrite === 'function') { // check if the stream is a function
+
+    streamWrite('\n');
+
+  } else {
+
+    history_log.error = new Error(`Stream for '${history_log.stream}' is not a Writable stream or function.`);
+
+  }
+
+  this._addToLogHistory(history_log);
+
+  return this;
 
 };
 
@@ -204,13 +373,11 @@ Logger.prototype.verbose = function() {
       formatted = this._format.apply(this, args)
     ;
 
-    return this._log('verbose', formatted);
-
-  } else {
-
-    return false;
+    this._log('verbose', formatted);
 
   }
+
+  return this;
 
 };
 
@@ -232,7 +399,9 @@ Logger.prototype.info = function() {
     formatted = this._format.apply(this, args)
   ;
 
-  return this._log('info', formatted);
+  this._log('info', formatted);
+
+  return this;
 
 };
 
@@ -254,7 +423,9 @@ Logger.prototype.error = function() {
     formatted = this._format.apply(this, args)
   ;
 
-  return this._log('error', formatted);
+  this._log('error', formatted);
+
+  return this;
 
 };
 
@@ -276,7 +447,9 @@ Logger.prototype.warning = function() {
     formatted = this._format.apply(this, args)
   ;
 
-  return this._log('warning', formatted);
+  this._log('warning', formatted);
+
+  return this;
 
 };
 
@@ -298,7 +471,9 @@ Logger.prototype.notice = function() {
     formatted = this._format.apply(this, args)
   ;
 
-  return this._log('notice', formatted);;
+  this._log('notice', formatted);
+
+  return this;
 
 };
 
@@ -315,7 +490,7 @@ Logger.prototype.debug = function() {
 
     let
       // create array with log type and log args
-      args      = [
+      args = [
         'debug',
         ...arguments
       ],
@@ -323,13 +498,11 @@ Logger.prototype.debug = function() {
       formatted = this._format.apply(this, args)
     ;
 
-    return this._log('debug', formatted);
-
-  } else {
-
-    return false;
+    this._log('debug', formatted);
 
   }
+
+  return this;
 
 };
 
@@ -351,7 +524,9 @@ Logger.prototype.log = function() {
     formatted = this._format.apply(this, args)
   ;
 
-  return this._log('log', formatted);
+  this._log('log', formatted);
+
+  return this;
 
 };
 
