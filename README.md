@@ -1,4 +1,4 @@
-![footstep logo](https://www.hamistudios.com/assets/img/footstep_icon_transparent.png)
+![footstep logo](logo.png)
 
 # footstep  
 footstep is a simple robust logger for [nodejs](https://nodejs.org/en/)  
