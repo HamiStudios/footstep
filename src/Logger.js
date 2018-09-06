@@ -3,20 +3,23 @@ const util = require('util');
 const os = require('os');
 const merge = require('circle-assign');
 
+// enums
+const StreamName = require('./enums/StreamName');
+
 // load colors
 const colors = require('./Colors');
 
 // variables
 const defaults = {
   streams: {
-    verbose: process.stdout,
-    info: process.stdout,
-    error: process.stderr,
-    warning: process.stdout,
-    notice: process.stdout,
-    debug: process.stdout,
-    log: process.stdout,
-    clear: process.stdout,
+    [StreamName.VERBOSE]: process.stdout,
+    [StreamName.INFO]: process.stdout,
+    [StreamName.ERROR]: process.stderr,
+    [StreamName.WARNING]: process.stdout,
+    [StreamName.NOTICE]: process.stdout,
+    [StreamName.DEBUG]: process.stdout,
+    [StreamName.LOG]: process.stdout,
+    [StreamName.CLEAR]: process.stdout,
   },
   format: `${'['.gray}{{date}}${']'.gray} {{type}}: {{message}}`,
   formats: {
@@ -33,25 +36,25 @@ const defaults = {
     },
     type: function (data) {
       switch (data.type) {
-        case 'verbose': {
+        case StreamName.VERBOSE: {
           return ` ${data.type.toString()} `.bg_magenta.white;
         }
-        case 'info': {
+        case StreamName.INFO: {
           return ` ${data.type.toString()} `.bright_bg_cyan.black;
         }
-        case 'error': {
+        case StreamName.ERROR: {
           return ` ${data.type.toString()} `.bg_red.white;
         }
-        case 'warning': {
+        case StreamName.WARNING: {
           return ` ${data.type.toString()} `.bright_bg_yellow.black;
         }
-        case 'notice': {
+        case StreamName.NOTICE: {
           return ` ${data.type.toString()} `.bg_blue.white;
         }
-        case 'debug': {
+        case StreamName.DEBUG: {
           return ` ${data.type.toString()} `.bg_white.black;
         }
-        case 'log': {
+        case StreamName.LOG: {
           return ` ${data.type.toString()} `;
         }
       }
@@ -116,7 +119,7 @@ Logger.prototype.setOptions = function (options) {
 /**
  * Write to the logs
  *
- * @param {string} type The log type
+ * @param {StreamName} type The log type
  * @param {string} formatted The formatted message
  * @returns {boolean}
  * @private
@@ -295,12 +298,12 @@ Logger.prototype.clear = function (full = true) {
 };
 
 /**
- * Print a blank line to the specified stream (defaults to stdout)
+ * Print a blank line to the specified stream (defaults to StreamName.LOG)
  *
- * @param {string} [stream] The stream key
+ * @param {StreamName} [stream] The stream name
  */
-Logger.prototype.blank = function (stream) {
-  let streamWrite = process.stdout;
+Logger.prototype.blank = function (stream = StreamName.LOG) {
+  let streamWrite = this.options.streams[stream];
   let history_log = {
     type: 'blank',
     message: '\n',
@@ -308,13 +311,6 @@ Logger.prototype.blank = function (stream) {
     stream: stream || 'stdout',
     timestamp: new Date(),
   };
-
-  if (stream !== undefined &&
-    stream !== null &&
-    typeof stream === 'string') {
-
-    streamWrite = this.options.streams[stream];
-  }
 
   if (streamWrite !== undefined &&
     typeof streamWrite.write === 'function') { // check if the stream is a Writable stream
@@ -347,7 +343,7 @@ Logger.prototype.verbose = function () {
     // format the message
     let formatted = this._format.apply(this, args);
 
-    this._log('verbose', formatted);
+    this._log(StreamName.VERBOSE, formatted);
   }
 
   return this;
@@ -367,7 +363,7 @@ Logger.prototype.info = function () {
   // format the message
   let formatted = this._format.apply(this, args);
 
-  this._log('info', formatted);
+  this._log(StreamName.INFO, formatted);
 
   return this;
 };
@@ -386,7 +382,7 @@ Logger.prototype.error = function () {
   // format the message
   let formatted = this._format.apply(this, args);
 
-  this._log('error', formatted);
+  this._log(StreamName.ERROR, formatted);
 
   return this;
 };
@@ -405,7 +401,7 @@ Logger.prototype.warning = function () {
   // format the message
   let formatted = this._format.apply(this, args);
 
-  this._log('warning', formatted);
+  this._log(StreamName.WARNING, formatted);
 
   return this;
 };
@@ -424,7 +420,7 @@ Logger.prototype.notice = function () {
   // format the message
   let formatted = this._format.apply(this, args);
 
-  this._log('notice', formatted);
+  this._log(StreamName.NOTICE, formatted);
 
   return this;
 };
@@ -445,7 +441,7 @@ Logger.prototype.debug = function () {
     // format the message
     let formatted = this._format.apply(this, args);
 
-    this._log('debug', formatted);
+    this._log(StreamName.DEBUG, formatted);
   }
 
   return this;
@@ -465,7 +461,7 @@ Logger.prototype.log = function () {
   // format the message
   let formatted = this._format.apply(this, args);
 
-  this._log('log', formatted);
+  this._log(StreamName.LOG, formatted);
 
   return this;
 };
