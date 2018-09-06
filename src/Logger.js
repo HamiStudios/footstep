@@ -223,6 +223,38 @@ Logger.prototype._addToLogHistory = function (log) {
 };
 
 /**
+ * Add padding each string so they are all the same length
+ *
+ * @param {string[]} strings The list of strings to pad
+ * @param {boolean} [start=true] Add padding to the start
+ *
+ * @returns {string[]}
+ */
+Logger.prototype.pad = function(strings, start = true) {
+  // get longest string in array
+  let longest = strings.reduce((a, b) => {
+    return a.length > b.length ? a : b;
+  });
+
+  // for each string
+  return strings.map((string) => {
+    // get the amount it needs to pad
+    let padding = longest.length - string.length;
+
+    // append a string at the start (unless specified)
+    // for the amount of padding
+    while(padding > 0) {
+      if(start) string = ' ' + string;
+      else string = string + ' ';
+      padding--;
+    }
+
+    // return the string
+    return string;
+  });
+};
+
+/**
  * Get the past logs
  *
  * @returns {Object[]} The past logs
