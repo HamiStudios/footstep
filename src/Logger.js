@@ -97,7 +97,7 @@ const defaults = {
  * @param {number} [options.maxLogHistory]
  * @returns {Logger}
  */
-function Logger(options) {
+function Logger(options = {}) {
   // merge the options with the default options
   this.options = merge(defaults, options);
 
@@ -114,6 +114,14 @@ Logger.prototype.setOptions = function (options) {
   this.options = merge(this.options, options);
 };
 
+/**
+ * Write to the logs
+ *
+ * @param {string} type The log type
+ * @param {string} formatted The formatted message
+ * @returns {boolean}
+ * @private
+ */
 Logger.prototype._log = function (type, formatted) {
   if (this.options.streams[type] !== undefined &&
     typeof this.options.streams[type].write === 'function') { // check if the stream is a Writable stream
@@ -228,14 +236,7 @@ Logger.prototype.getPastLogs = function () {
  *
  * @param {boolean} [full=true] Whether to perform a full clear
  */
-Logger.prototype.clear = function (full) {
-  if (full === undefined ||
-    full === null ||
-    typeof full !== 'boolean') {
-
-    full = true;
-  }
-
+Logger.prototype.clear = function (full = true) {
   let streamWrite = this.options.streams.clear;
   let code = full ? this.options.clearCodes.full : this.options.clearCodes.standard;
   let history_log = {
