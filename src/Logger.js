@@ -1,75 +1,74 @@
-const
-  // modules
-  util      = require('util'),
-  os        = require('os'),
-  stream    = require('stream'),
-  merge     = require('circle-assign'),
-  colors    = require('./Colors'),
+// npm
+const util = require('util');
+const os = require('os');
+const stream = require('stream');
+const merge = require('circle-assign');
 
-  // variables
-  defaults  = {
-    streams       : {
-      verbose   : process.stdout,
-      info      : process.stdout,
-      error     : process.stderr,
-      warning   : process.stdout,
-      notice    : process.stdout,
-      debug     : process.stdout,
-      log       : process.stdout,
-      clear     : process.stdout
+// load colors
+const colors = require('./Colors');
+
+// variables
+const defaults = {
+  streams: {
+    verbose: process.stdout,
+    info: process.stdout,
+    error: process.stderr,
+    warning: process.stdout,
+    notice: process.stdout,
+    debug: process.stdout,
+    log: process.stdout,
+    clear: process.stdout,
+  },
+  format: `${'['.gray}{{date}}${']'.gray} {{type}}: {{message}}`,
+  formats: {
+    date: function () {
+      let date = new Date();
+      let hours = ('0' + date.getHours()).slice(-2);
+      let minutes = ('0' + date.getMinutes()).slice(-2);
+      let seconds = ('0' + date.getSeconds()).slice(-2);
+
+      return `${hours}:${minutes}:${seconds}`.magenta;
     },
-    format        : `${'['.gray}{{date}}${']'.gray} {{type}}: {{message}}`,
-    formats       : {
-      date      : function () {
-
-        let
-          date    = new Date(),
-          hours   = ('0' + date.getHours()).slice(-2),
-          minutes = ('0' + date.getMinutes()).slice(-2),
-          seconds = ('0' + date.getSeconds()).slice(-2)
-        ;
-
-        return `${hours}:${minutes}:${seconds}`.magenta;
-
-      },
-      message   : function (data) {
-
-        return data.message;
-
-      },
-      type      : function (data) {
-
-        switch (data.type) {
-          case 'verbose':
-            return ` ${data.type.toString()} `.bg_magenta.white;
-          case 'info':
-            return ` ${data.type.toString()} `.bright_bg_cyan.black;
-          case 'error':
-            return ` ${data.type.toString()} `.bg_red.white;
-          case 'warning':
-            return ` ${data.type.toString()} `.bright_bg_yellow.black;
-          case 'notice':
-            return ` ${data.type.toString()} `.bg_blue.white;
-          case 'debug':
-            return ` ${data.type.toString()} `.bg_white.black;
-          case 'log':
-            return ` ${data.type.toString()} `;
+    message: function (data) {
+      return data.message;
+    },
+    type: function (data) {
+      switch (data.type) {
+        case 'verbose': {
+          return ` ${data.type.toString()} `.bg_magenta.white;
         }
-
+        case 'info': {
+          return ` ${data.type.toString()} `.bright_bg_cyan.black;
+        }
+        case 'error': {
+          return ` ${data.type.toString()} `.bg_red.white;
+        }
+        case 'warning': {
+          return ` ${data.type.toString()} `.bright_bg_yellow.black;
+        }
+        case 'notice': {
+          return ` ${data.type.toString()} `.bg_blue.white;
+        }
+        case 'debug': {
+          return ` ${data.type.toString()} `.bg_white.black;
+        }
+        case 'log': {
+          return ` ${data.type.toString()} `;
+        }
       }
     },
-    prefix        : '',
-    suffix        : '',
-    eol           : os.EOL,
-    debug         : false,
-    verbose       : false,
-    maxLogHistory : 50,
-    clearCodes    : {
-      full          : '\x1b[2J',
-      standard      : '\x1b[0f'
-    }
-  }
-;
+  },
+  prefix: '',
+  suffix: '',
+  eol: os.EOL,
+  debug: false,
+  verbose: false,
+  maxLogHistory: 50,
+  clearCodes: {
+    full: '\x1b[2J',
+    standard: '\x1b[0f',
+  },
+};
 
 
 /**
@@ -99,13 +98,11 @@ const
  * @returns {Logger}
  */
 function Logger(options) {
-
   // merge the options with the default options
   this.options = merge(defaults, options);
 
   // create log history array
   this._past_logs = [];
-
 }
 
 /**
@@ -113,39 +110,30 @@ function Logger(options) {
  *
  * @param {Object} options The options to set
  */
-Logger.prototype.setOptions = function(options) {
-
+Logger.prototype.setOptions = function (options) {
   this.options = merge(this.options, options);
-
 };
 
-Logger.prototype._log = function(type, formatted) {
+Logger.prototype._log = function (type, formatted) {
+  if (this.options.streams[type] !== undefined &&
+    typeof this.options.streams[type].write === 'function') { // check if the stream is a Writable stream
 
-  if(this.options.streams[type] !== undefined &&
-     typeof this.options.streams[type].write === 'function') { // check if the stream is a Writable stream
-    
     // write the formatted log output to the stream
     this.options.streams[type].write(
-      formatted
+      formatted,
     );
 
     return true;
-
-  } else if(typeof this.options.streams[type] === 'function') { // check if the stream is a function
-
+  } else if (typeof this.options.streams[type] === 'function') { // check if the stream is a function
     // run the function with the formatted argument
     this.options.streams[type](formatted);
 
     return true;
-
   } else {
-
     this.getPastLogs()[0].error = new Error(`Stream for '${type}' is not a Writable stream or function.`);
 
     return false;
-
   }
-
 };
 
 /**
@@ -154,62 +142,48 @@ Logger.prototype._log = function(type, formatted) {
  * @private
  * @param {any} args
  */
-Logger.prototype._format = function() {
-
+Logger.prototype._format = function () {
   // log format and array of
-  let
-    formatted = this.options.format,
-    replace   = formatted.match(/{{(.*?)}}/g),
-    args    = [ ...arguments ],
-    type      = args[0],
-    message   = util.format.apply(null, args.slice(1, args.length)) // remove log type from arguments before formatting them
-  ;
+  let formatted = this.options.format;
+  let replace = formatted.match(/{{(.*?)}}/g);
+  let args = [...arguments];
+  let type = args[0];
+  let message = util.format.apply(null, args.slice(1, args.length)); // remove log type from arguments before formatting them
 
   // go through all the replaceable values and set them accordingly
   for (let i = 0; i < replace.length; i++) {
+    // value without {{ }} (function name)
+    let value = replace[i].replace(/{{\s?/g, '').replace(/\s?}}/g, '');
 
-    let
-      // value without {{ }} (function name)
-      value   = replace[i].replace(/{{\s?/g, '').replace(/\s?}}/g, ''),
-
-      // data for the format functions
-      data    = {
-        message : message,
-        type    : type,
-        options : this.options
-      }
-    ;
+    // data for the format functions
+    let data = {
+      message: message,
+      type: type,
+      options: this.options,
+    };
 
     // check if format function exists
-    if(typeof this.options.formats[value] === 'function') {
-
+    if (typeof this.options.formats[value] === 'function') {
       // format the message using that function
       formatted = formatted.replace(replace[i], this.options.formats[value](data));
-
     } else {
-
       // just set it as the value
       formatted = formatted.replace(replace[i], this.options.formats[value]);
-
     }
-
   }
 
-  let
-    returnValue = this.options.prefix + formatted + this.options.suffix + this.options.eol
-  ;
+  let returnValue = this.options.prefix + formatted + this.options.suffix + this.options.eol;
 
   this._addToLogHistory({
-    type      : type,
-    message   : message,
-    output    : returnValue,
-    stream    : type.toLowerCase(),
-    timestamp : new Date()
+    type: type,
+    message: message,
+    output: returnValue,
+    stream: type.toLowerCase(),
+    timestamp: new Date(),
   });
 
   // return the formatted output with the system EOL
   return returnValue;
-
 };
 
 /**
@@ -223,27 +197,21 @@ Logger.prototype._format = function() {
  * @param {Date} log.timestamp The time it was logged
  * @private
  */
-Logger.prototype._addToLogHistory = function(log) {
-
-  if(!Array.isArray(this._past_logs)) {
-
+Logger.prototype._addToLogHistory = function (log) {
+  if (!Array.isArray(this._past_logs)) {
     this._past_logs = [];
-
   }
 
   // checks if the logs is larger thant the max size
-  if(this._past_logs.length >= this.options.maxLogHistory) {
-
+  if (this._past_logs.length >= this.options.maxLogHistory) {
     // removes the first log in the array
     this._past_logs.shift();
 
     // this is done to reduce the amount of logs kept in memory
     // to save memory on larger applications
-
   }
 
   this._past_logs.push(log);
-
 };
 
 /**
@@ -251,10 +219,8 @@ Logger.prototype._addToLogHistory = function(log) {
  *
  * @returns {Object[]} The past logs
  */
-Logger.prototype.getPastLogs = function() {
-
+Logger.prototype.getPastLogs = function () {
   return this._past_logs;
-
 };
 
 /**
@@ -262,47 +228,38 @@ Logger.prototype.getPastLogs = function() {
  *
  * @param {boolean} [full=true] Whether to perform a full clear
  */
-Logger.prototype.clear = function(full) {
-
-  if(full === undefined ||
+Logger.prototype.clear = function (full) {
+  if (full === undefined ||
     full === null ||
     typeof full !== 'boolean') {
 
     full = true;
-
   }
 
-  let
-    streamWrite = this.options.streams.clear,
-    code        = full ? this.options.clearCodes.full : this.options.clearCodes.standard,
-    history_log = {
-      type      : 'clear',
-      message   : code,
-      output    : code,
-      stream    : 'clear',
-      timestamp : new Date()
-    }
-  ;
+  let streamWrite = this.options.streams.clear;
+  let code = full ? this.options.clearCodes.full : this.options.clearCodes.standard;
+  let history_log = {
+    type: 'clear',
+    message: code,
+    output: code,
+    stream: 'clear',
+    timestamp: new Date(),
+  };
 
-  if(streamWrite !== undefined &&
+  if (streamWrite !== undefined &&
     typeof streamWrite.write === 'function') { // check if the stream is a Writable stream
 
     streamWrite.write(code);
-
-  } else if(typeof streamWrite === 'function') { // check if the stream is a function
+  } else if (typeof streamWrite === 'function') { // check if the stream is a function
 
     streamWrite(code);
-
   } else {
-
     history_log.error = new Error(`Stream for 'clear' is not a Writable stream or function.`);
-
   }
 
   this._addToLogHistory(history_log);
 
   return this;
-
 };
 
 /**
@@ -310,46 +267,36 @@ Logger.prototype.clear = function(full) {
  *
  * @param {string} [stream] The stream key
  */
-Logger.prototype.blank = function(stream) {
+Logger.prototype.blank = function (stream) {
+  let streamWrite = process.stdout;
+  let history_log = {
+    type: 'blank',
+    message: '\n',
+    output: '\n',
+    stream: stream || 'stdout',
+    timestamp: new Date(),
+  };
 
-  let
-    streamWrite = process.stdout,
-    history_log = {
-      type      : 'blank',
-      message   : '\n',
-      output    : '\n',
-      stream    : stream || 'stdout',
-      timestamp : new Date()
-    }
-  ;
-
-  if(stream !== undefined &&
+  if (stream !== undefined &&
     stream !== null &&
     typeof stream === 'string') {
 
     streamWrite = this.options.streams[stream];
-
   }
 
-  if(streamWrite !== undefined &&
+  if (streamWrite !== undefined &&
     typeof streamWrite.write === 'function') { // check if the stream is a Writable stream
 
     streamWrite.write('\n');
-
-  } else if(typeof streamWrite === 'function') { // check if the stream is a function
-
+  } else if (typeof streamWrite === 'function') { // check if the stream is a function
     streamWrite('\n');
-
   } else {
-
     history_log.error = new Error(`Stream for '${history_log.stream}' is not a Writable stream or function.`);
-
   }
 
   this._addToLogHistory(history_log);
 
   return this;
-
 };
 
 /**
@@ -357,27 +304,21 @@ Logger.prototype.blank = function(stream) {
  *
  * @param {any} args
  */
-Logger.prototype.verbose = function() {
-
+Logger.prototype.verbose = function () {
   // if verbose is enabled proceed
-  if(this.options.verbose) {
-
-    let
-      // create array with log type and log args
-      args      = [
-        'verbose',
-        ...arguments
-      ],
-      // format the message
-      formatted = this._format.apply(this, args)
-    ;
+  if (this.options.verbose) {
+    // create array with log type and log args
+    let args = [
+      'verbose',
+      ...arguments,
+    ];
+    // format the message
+    let formatted = this._format.apply(this, args);
 
     this._log('verbose', formatted);
-
   }
 
   return this;
-
 };
 
 
@@ -386,22 +327,18 @@ Logger.prototype.verbose = function() {
  *
  * @param {any} args
  */
-Logger.prototype.info = function() {
-
-  let
-    // create array with log type and log args
-    args      = [
-      'info',
-      ...arguments
-    ],
-    // format the message
-    formatted = this._format.apply(this, args)
-  ;
+Logger.prototype.info = function () {
+  // create array with log type and log args
+  let args = [
+    'info',
+    ...arguments,
+  ];
+  // format the message
+  let formatted = this._format.apply(this, args);
 
   this._log('info', formatted);
 
   return this;
-
 };
 
 
@@ -410,22 +347,18 @@ Logger.prototype.info = function() {
  *
  * @param {any} args
  */
-Logger.prototype.error = function() {
-
-  let
-    // create array with log type and log args
-    args      = [
-      'error',
-      ...arguments
-    ],
-    // format the message
-    formatted = this._format.apply(this, args)
-  ;
+Logger.prototype.error = function () {
+  // create array with log type and log args
+  let args = [
+    'error',
+    ...arguments,
+  ];
+  // format the message
+  let formatted = this._format.apply(this, args);
 
   this._log('error', formatted);
 
   return this;
-
 };
 
 
@@ -434,22 +367,18 @@ Logger.prototype.error = function() {
  *
  * @param {any} args
  */
-Logger.prototype.warning = function() {
-
-  let
-    // create array with log type and log args
-    args      = [
-      'warning',
-      ...arguments
-    ],
-    // format the message
-    formatted = this._format.apply(this, args)
-  ;
+Logger.prototype.warning = function () {
+  // create array with log type and log args
+  let args = [
+    'warning',
+    ...arguments,
+  ];
+  // format the message
+  let formatted = this._format.apply(this, args);
 
   this._log('warning', formatted);
 
   return this;
-
 };
 
 
@@ -458,22 +387,18 @@ Logger.prototype.warning = function() {
  *
  * @param {any} args
  */
-Logger.prototype.notice = function() {
-
-  let
-    // create array with log type and log args
-    args      = [
-      'notice',
-      ...arguments
-    ],
-    // format the message
-    formatted = this._format.apply(this, args)
-  ;
+Logger.prototype.notice = function () {
+  // create array with log type and log args
+  let args = [
+    'notice',
+    ...arguments,
+  ];
+  // format the message
+  let formatted = this._format.apply(this, args);
 
   this._log('notice', formatted);
 
   return this;
-
 };
 
 
@@ -482,27 +407,21 @@ Logger.prototype.notice = function() {
  *
  * @param {any} args
  */
-Logger.prototype.debug = function() {
-
+Logger.prototype.debug = function () {
   // if debug is enabled proceed
-  if(this.options.debug) {
-
-    let
-      // create array with log type and log args
-      args = [
-        'debug',
-        ...arguments
-      ],
-      // format the message
-      formatted = this._format.apply(this, args)
-    ;
+  if (this.options.debug) {
+    // create array with log type and log args
+    let args = [
+      'debug',
+      ...arguments,
+    ];
+    // format the message
+    let formatted = this._format.apply(this, args);
 
     this._log('debug', formatted);
-
   }
 
   return this;
-
 };
 
 
@@ -511,22 +430,18 @@ Logger.prototype.debug = function() {
  *
  * @param {any} args
  */
-Logger.prototype.log = function() {
-
-  let
-    // create array with log type and log args
-    args      = [
-      'log',
-      ...arguments
-    ],
-    // format the message
-    formatted = this._format.apply(this, args)
-  ;
+Logger.prototype.log = function () {
+  // create array with log type and log args
+  let args = [
+    'log',
+    ...arguments,
+  ];
+  // format the message
+  let formatted = this._format.apply(this, args);
 
   this._log('log', formatted);
 
   return this;
-
 };
 
 
@@ -536,11 +451,9 @@ Logger.prototype.log = function() {
  * @param {Boolean} value
  * @returns {Boolean}
  */
-Logger.prototype.setVerbose = function(value) {
-
+Logger.prototype.setVerbose = function (value) {
   this.options.verbose = value;
   return value;
-
 };
 
 
@@ -550,11 +463,9 @@ Logger.prototype.setVerbose = function(value) {
  * @param {Boolean} value
  * @returns {Boolean}
  */
-Logger.prototype.setDebug = function(value) {
-
+Logger.prototype.setDebug = function (value) {
   this.options.debug = value;
   return value;
-
 };
 
 

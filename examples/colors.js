@@ -1,6 +1,5 @@
-const
-  { Colors }  = require('./../index')
-;
+// libs
+const { Colors } = require('./../index');
 
 console.log('Colors :');
 console.log('  RESET   : ', 'TEST'.reset);
