@@ -210,9 +210,14 @@ describe('generic tests', () => {
     expect(logger.getPastLogs()).toHaveLength(1);
   });
 
+  test('Creating a logger with no options still works', () => {
+    let logger = new Logger();
+
+    expect(typeof logger.options).toBe('object');
+  });
 });
 
-describe('option methods', () => {
+describe('util methods', () => {
   beforeAll(() => {
     logger = new Logger({
       streams: {
@@ -236,6 +241,22 @@ describe('option methods', () => {
     });
 
     expect(logger.options.eol).toBe('>');
+  });
+
+  test('.pad() should add padding to strings to make them all the same length', () => {
+    let strings = ['test', 'testing', 'testy'];
+
+    strings = logger.pad(strings);
+
+    expect(strings[0]).toBe('   test');
+  });
+
+  test('.pad() should add padding to the end of a string when specified', () => {
+    let strings = ['test', 'testing', 'testy'];
+
+    strings = logger.pad(strings, false);
+
+    expect(strings[0]).toBe('test   ');
   });
 
   test('.setDebug() should set whether the logger should output debug logs', () => {
