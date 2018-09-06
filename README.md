@@ -9,19 +9,23 @@ footstep is a simple robust logger for [nodejs](https://nodejs.org/en/)
 [![license](https://img.shields.io/github/license/hamistudios/footstep.svg)](https://github.com/hamistudios/footstep/blob/master/LICENSE.md)
 
 
-### Installation  
+# Installation  
 ```  
 $ npm install --save @hamistudios/footstep  
-```  
-  
-### Setup  
+```
+
+# Documentation
+
+## Logger
+
+#### Setup  
 ```javascript  
 const { Logger } = require("footstep");  
   
 let logger = new Logger(options);  
 ```  
-  
-### Usage  
+
+#### Usage  
 ```javascript  
 logger.verbose("Hello World");  // => [10:34:35] verbose: Hello World
 logger.info("Hello World");     // => [10:34:35] info: Hello World
@@ -32,29 +36,7 @@ logger.debug("Hello World");    // => [10:34:35] debug: Hello World
 logger.log("Hello World");      // => [10:34:35] log: Hello World
 ```
 
-#### Helper methods
-```javascript
-// setting verbose & debug to true
-logger.setVerbose(value: boolean)  
-logger.setDebug(value: boolean)
-
-// you can clear stdout via
-logger.clear(full: boolean)
-
-// you can also print a blank line via
-logger.blank(stream: string)
-
-// accessing log history provides and array of past
-// logs (max log history specified via options.maxLogHistory)
-logger.getPastLogs()
-
-// add padding to an array of strings to make them all the same length
-logger.pad(['test', 'testing']); // => ['   test', 'testing']
-
-logger.pad(['test', 'testing'], false); // => ['test   ', 'testing']
-```
-  
-#### Options  
+#### Options
 Footstep comes with a lot of useful options to help customize your log messages including, custom streams, prefixes and functional expansions.   
   
 | variables           | default                                            | type                 |
@@ -84,23 +66,18 @@ Footstep comes with a lot of useful options to help customize your log messages 
 You can create custom function expansions by adding a new function to `formats`  
   
 ```javascript  
-const  
-  options = {
-    format  : '[{{dow}}] {{message}}',
-    formats : {
-      dow     : function() {
-        let
-          days  = [ 'Sunday','Monday','Tuesday',
-                    'Wednesday','Thursday','Friday', 
-                    'Saturday' ],
-          date  = new Date()
-        ;
-        
-        return days[date.getDay()];  
-      }  
-    }
+const options = {
+  format  : '[{{dow}}] {{message}}',
+  formats : {
+    dow     : function() {
+      let days  = [ 'Sunday','Monday','Tuesday',
+        'Wednesday','Thursday','Friday', 'Saturday' ],
+      let date  = new Date();
+      
+      return days[date.getDay()];  
+    }  
   }
-;
+};
 
 let logger = new Logger(options);
 
@@ -111,11 +88,163 @@ logger.log('Hello World'); // => [Thursday] Hello World
   
 You can set the stream to anything with the instance of [`Stream`](https://nodejs.org/api/stream.html) including process.stdout, process.stderr, fs streams, HTTP streams etc.
 
+### Methods
 
-### Colors
+#### .setVerbose
+Set whether verbose logs should be sent to the stream.
+
+##### Syntax
+```javascript
+logger.setVerbose(boolean: value)
+```
+
+#### .setDebug
+Set whether debug logs should be sent to the stream.
+
+##### Syntax
+```javascript
+logger.setDebug(boolean: value)
+```
+
+#### .clear
+Clear the log output
+
+##### Syntax
+```javascript
+logger.clear(full: boolean)
+```
+
+#### .blank
+Print a blank line to the specified stream
+
+Syntax
+```javascript
+logger.blank([StreamName: stream])
+```
+
+Example
+```javascript
+logger.blank(StreamName.ERROR); // print a blank line to the error stream
+```
+
+
+#### .getPastLogs
+Get an array of past logs (max log history specified via `options.maxLogHistory`)
+
+Syntax
+```javascript
+logger.getPastLogs()
+```
+
+#### .pad
+Add padding to an array of strings to make them all the same length
+
+Syntax
+```javascript
+logger.pad(string[]: strings, [boolean: start=true])
+```
+
+Example
+```javascript
+logger.pad(['test', 'testing']); // => ['   test', 'testing']
+logger.pad(['test', 'testing'], false); // => ['test   ', 'testing']
+```
+
+#### .verbose
+Print to the verbose stream
+
+Syntax
+```javascript
+logger.verbose(any[]: args)
+```
+
+Example
+```javascript
+logger.verbose('Sum (5+5)', 10);
+```
+
+#### .info
+Print to the info stream
+
+Syntax
+```javascript
+logger.info(any[]: args)
+```
+
+Example
+```javascript
+logger.info('Sum (5+5)', 10);
+```
+
+#### .error
+Print to the error stream
+
+Syntax
+```javascript
+logger.error(any[]: args)
+```
+
+Example
+```javascript
+logger.error('Sum (5+5)', 10);
+```
+
+#### .warning
+Print to the warning stream
+
+Syntax
+```javascript
+logger.warning(any[]: args)
+```
+
+Example
+```javascript
+logger.warning('Sum (5+5)', 10);
+```
+
+#### .notice
+Print to the notice stream
+
+Syntax
+```javascript
+logger.notice(any[]: args)
+```
+
+Example
+```javascript
+logger.notice('Sum (5+5)', 10);
+```
+
+#### .debug
+Print to the debug stream
+
+Syntax
+```javascript
+logger.debug(any[]: args)
+```
+
+Example
+```javascript
+logger.debug('Sum (5+5)', 10);
+```
+
+#### .log
+Print to the log stream
+
+Syntax
+```javascript
+logger.log(any[]: args)
+```
+
+Example
+```javascript
+logger.log('Sum (5+5)', 10);
+```
+
+## Colors
 Footstep has built in support for colors and styles, you can use these to bring your logs to life.
 
-#### Usage
+### Usage
 ```javascript  
 const { Colors } = require("footstep");
 
@@ -126,7 +255,7 @@ console.log('I am black with a red background'.red.inverse);
 console.log(color.strip('I am no color'.yellow));
 ```
 
-#### List of colors & styles
+### List of colors & styles
 - .reset
 - .black
 - .red
