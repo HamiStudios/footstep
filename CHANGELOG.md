@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [2.2.2] - 06/09/2018
+
+### Added
+- Add pad() method to add padding to strings to make them the same length [#4](https://github.com/HamiStudios/footstep/issues/4)
+
+### Changed
+- Refactored code style. Now follows [Airbnb JavaScript style](https://github.com/airbnb/javascript) [WIP]
+
 ## [2.1.1] - 20/06/2018
 
 ### Added
