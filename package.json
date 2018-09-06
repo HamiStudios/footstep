@@ -1,6 +1,6 @@
 {
   "name": "@hamistudios/footstep",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "description": "a simple robust nodejs logger",
   "main": "index.js",
   "scripts": {
