@@ -308,7 +308,7 @@ Logger.prototype.blank = function (stream = StreamName.LOG) {
     type: 'blank',
     message: '\n',
     output: '\n',
-    stream: stream || 'stdout',
+    stream: stream,
     timestamp: new Date(),
   };
 
