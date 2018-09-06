@@ -1,10 +1,12 @@
-const
-  Logger    = require('./src/Logger'),
-  Colors    = require('./src/Colors')
-;
+// libs
+const Logger = require('./src/Logger');
+const Colors = require('./src/Colors');
 
-// Export Logger and Colors
+// enums
+const StreamName = require('./src/enums/StreamName');
+
 module.exports = {
   Logger,
-  Colors
+  Colors,
+  StreamName,
 };
