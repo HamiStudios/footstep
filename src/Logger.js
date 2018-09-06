@@ -1,7 +1,6 @@
 // npm
 const util = require('util');
 const os = require('os');
-const stream = require('stream');
 const merge = require('circle-assign');
 
 // load colors
@@ -354,7 +353,6 @@ Logger.prototype.verbose = function () {
   return this;
 };
 
-
 /**
  * Info log output
  *
@@ -373,7 +371,6 @@ Logger.prototype.info = function () {
 
   return this;
 };
-
 
 /**
  * Error log output
@@ -394,7 +391,6 @@ Logger.prototype.error = function () {
   return this;
 };
 
-
 /**
  * Warning log output
  *
@@ -414,7 +410,6 @@ Logger.prototype.warning = function () {
   return this;
 };
 
-
 /**
  * Notice log output
  *
@@ -433,7 +428,6 @@ Logger.prototype.notice = function () {
 
   return this;
 };
-
 
 /**
  * Debug log output (only if debug is true)
@@ -457,7 +451,6 @@ Logger.prototype.debug = function () {
   return this;
 };
 
-
 /**
  * Standard log output
  *
@@ -477,7 +470,6 @@ Logger.prototype.log = function () {
   return this;
 };
 
-
 /**
  * Set whether verbose should execute
  *
@@ -489,7 +481,6 @@ Logger.prototype.setVerbose = function (value) {
   return value;
 };
 
-
 /**
  * Set whether debug should execute
  *
@@ -500,6 +491,5 @@ Logger.prototype.setDebug = function (value) {
   this.options.debug = value;
   return value;
 };
-
 
 module.exports = Logger;
