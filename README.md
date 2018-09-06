@@ -47,6 +47,11 @@ logger.blank(stream: string)
 // accessing log history provides and array of past
 // logs (max log history specified via options.maxLogHistory)
 logger.getPastLogs()
+
+// add padding to an array of strings to make them all the same length
+logger.pad(['test', 'testing']); // => ['   test', 'testing']
+
+logger.pad(['test', 'testing'], false); // => ['test   ', 'testing']
 ```
   
 #### Options  
